@@ -1,5 +1,6 @@
 # Binaries
 /whozere
+dist/
 *.exe
 *.exe~
 *.dll
