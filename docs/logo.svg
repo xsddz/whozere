@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="55" fill="url(#grad1)"/>
+  
+  <!-- Bell icon -->
+  <path d="M60 25 C45 25 35 38 35 50 L35 65 L30 75 L90 75 L85 65 L85 50 C85 38 75 25 60 25 Z" 
+        fill="white" opacity="0.95"/>
+  
+  <!-- Bell clapper -->
+  <circle cx="60" cy="82" r="8" fill="white" opacity="0.95"/>
+  
+  <!-- Notification dot -->
+  <circle cx="78" cy="35" r="12" fill="#ff6b6b"/>
+  
+  <!-- Question mark in dot -->
+  <text x="78" y="40" font-family="Arial, sans-serif" font-size="14" font-weight="bold" 
+        fill="white" text-anchor="middle">?</text>
+</svg>
