@@ -199,7 +199,8 @@ sudo systemctl enable --now whozere
 ```
 </details>
 
-### Windows
+<details>
+<summary>Windows (NSSM)</summary>
 
 使用任务计划程序或 [NSSM](https://nssm.cc/) 安装为 Windows 服务：
 
@@ -207,6 +208,7 @@ sudo systemctl enable --now whozere
 nssm install whozere C:\whozere\whozere.exe -config C:\whozere\config.yaml
 nssm start whozere
 ```
+</details>
 
 ## 🖥️ 平台说明
 

@@ -242,7 +242,8 @@ sudo systemctl enable --now whozere
 ```
 </details>
 
-### Windows
+<details>
+<summary>Windows (NSSM)</summary>
 
 Use [NSSM](https://nssm.cc/):
 
@@ -250,6 +251,7 @@ Use [NSSM](https://nssm.cc/):
 nssm install whozere C:\whozere\whozere.exe -config C:\whozere\config.yaml
 nssm start whozere
 ```
+</details>
 
 ## 🖥️ Platform Notes
 
