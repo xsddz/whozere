@@ -19,14 +19,27 @@ type LoginEvent struct {
 
 // Format returns a formatted message for the login event
 func (e LoginEvent) Format() string {
+	// Get timezone info
+	zone, offset := e.Timestamp.Zone()
+	offsetHours := offset / 3600
+	var offsetStr string
+	if offsetHours >= 0 {
+		offsetStr = fmt.Sprintf("UTC+%d", offsetHours)
+	} else {
+		offsetStr = fmt.Sprintf("UTC%d", offsetHours)
+	}
+
 	msg := fmt.Sprintf("🔔 Login Alert\n\n"+
 		"User: %s\n"+
 		"Host: %s\n"+
 		"Time: %s\n"+
+		"Zone: %s (%s)\n"+
 		"OS: %s",
 		e.Username,
 		e.Hostname,
 		e.Timestamp.Format("2006-01-02 15:04:05"),
+		zone,
+		offsetStr,
 		e.OS,
 	)
 

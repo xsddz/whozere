@@ -150,6 +150,7 @@ When a login is detected, you'll receive a notification like this:
 User: alice
 Host: my-server
 Time: 2026-02-07 20:45:30
+Zone: CST (UTC+8)
 OS: linux
 IP: 192.168.1.100
 Terminal: ssh
