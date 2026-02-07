@@ -1,0 +1,54 @@
+# whozere configuration example
+# Copy this file to config.yaml and modify as needed
+
+notifiers:
+  # Generic Webhook
+  - type: webhook
+    name: "My Webhook"
+    enabled: true
+    config:
+      url: "https://example.com/webhook"
+      method: "POST"  # GET or POST
+      # content_type: "application/json"  # optional, default: application/json
+
+  # DingTalk Robot
+  - type: dingtalk
+    name: "DingTalk Alert"
+    enabled: false
+    config:
+      webhook: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"
+      secret: ""  # optional, for signed mode
+
+  # WeCom (企业微信) Robot
+  - type: wecom
+    name: "WeCom Alert"
+    enabled: false
+    config:
+      webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY"
+
+  # Telegram Bot
+  - type: telegram
+    name: "Telegram Alert"
+    enabled: false
+    config:
+      token: "YOUR_BOT_TOKEN"
+      chat_id: "YOUR_CHAT_ID"
+
+  # Slack Webhook
+  - type: slack
+    name: "Slack Alert"
+    enabled: false
+    config:
+      webhook: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+
+  # Email (SMTP)
+  - type: email
+    name: "Email Alert"
+    enabled: false
+    config:
+      smtp_host: "smtp.example.com"
+      smtp_port: "587"
+      username: "your@email.com"
+      password: "your_password"
+      from: "whozere@example.com"
+      to: "admin@example.com"  # comma-separated for multiple recipients
