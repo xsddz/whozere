@@ -287,12 +287,6 @@ whozere relies on system logs for detection. It cannot detect:
 - Attackers with root access who disable logging before login
 - Attacks that bypass standard authentication (e.g., kernel exploits)
 
-For comprehensive security, combine whozere with:
-
-- Centralized log collection (ship logs to remote server immediately)
-- Host-based intrusion detection (AIDE, OSSEC)
-- Network monitoring and anomaly detection
-
 ## 🗑️ Uninstall
 
 ```bash
