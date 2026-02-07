@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 # whozere - One-line installation script
-# Usage: curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/install.sh | bash
 #
 
 set -e

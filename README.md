@@ -32,7 +32,7 @@
 
 ```bash
 # 1. Install (one-line for macOS/Linux)
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/install.sh | bash
 
 # 2. Configure
 sudo cp /usr/local/etc/whozere/config.example.yaml /usr/local/etc/whozere/config.yaml
@@ -144,15 +144,35 @@ notifiers:
 
 ## 🔧 Running as a Service
 
-### macOS (launchd)
+Use the `scripts/service.sh` helper or configure manually.
+
+### Quick Setup (Recommended)
 
 ```bash
-cat > ~/Library/LaunchAgents/com.whozere.plist << 'EOF'
+# Download service script
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/service.sh -o service.sh
+chmod +x service.sh
+
+# Install and start service
+./service.sh install   # Auto-detects macOS/Linux
+./service.sh start
+./service.sh status
+
+# Other commands: stop, restart, uninstall
+```
+
+### Manual Setup
+
+<details>
+<summary>macOS (launchd)</summary>
+
+```bash
+cat > ~/Library/LaunchAgents/com.whozere.agent.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key><string>com.whozere</string>
+    <key>Label</key><string>com.whozere.agent</string>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/whozere</string>
@@ -165,17 +185,14 @@ cat > ~/Library/LaunchAgents/com.whozere.plist << 'EOF'
 </plist>
 EOF
 
-launchctl load ~/Library/LaunchAgents/com.whozere.plist
+launchctl load ~/Library/LaunchAgents/com.whozere.agent.plist
 ```
+</details>
 
-### Linux (systemd)
+<details>
+<summary>Linux (systemd)</summary>
 
 ```bash
-# Copy config to /etc
-sudo mkdir -p /etc/whozere
-sudo cp /usr/local/etc/whozere/config.yaml /etc/whozere/config.yaml
-
-# Create service
 sudo tee /etc/systemd/system/whozere.service << 'EOF'
 [Unit]
 Description=whozere - Login Detection & Notification
@@ -183,7 +200,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/whozere -config /etc/whozere/config.yaml
+ExecStart=/usr/local/bin/whozere -config /usr/local/etc/whozere/config.yaml
 Restart=always
 RestartSec=5
 
@@ -193,6 +210,7 @@ EOF
 
 sudo systemctl enable --now whozere
 ```
+</details>
 
 ### Windows
 
@@ -214,19 +232,13 @@ nssm start whozere
 ## �️ Uninstall
 
 ```bash
-# macOS/Linux
+# One-line uninstall
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
+
+# Or manually
 sudo rm /usr/local/bin/whozere
 sudo rm -rf /usr/local/etc/whozere
-
-# Remove service (macOS)
-launchctl unload ~/Library/LaunchAgents/com.whozere.plist
-rm ~/Library/LaunchAgents/com.whozere.plist
-
-# Remove service (Linux)
-sudo systemctl stop whozere
-sudo systemctl disable whozere
-sudo rm /etc/systemd/system/whozere.service
-sudo rm -rf /etc/whozere
+./scripts/service.sh uninstall  # Remove service
 ```
 
 ## �🛠️ Development

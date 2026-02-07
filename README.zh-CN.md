@@ -40,7 +40,7 @@
 
 ```bash
 # 方式一：一键安装脚本
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/install.sh | bash
 
 # 方式二：Go 安装
 go install github.com/xsddz/whozere/cmd/whozere@latest
@@ -101,43 +101,55 @@ whozere -version
 
 ## 🔧 作为服务运行
 
-### macOS (launchd)
+使用 `scripts/service.sh` 快速配置，或手动设置。
+
+### 快速配置（推荐）
 
 ```bash
-# 创建 plist 文件
-cat > ~/Library/LaunchAgents/com.whozere.plist << 'EOF'
+# 下载服务脚本
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/service.sh -o service.sh
+chmod +x service.sh
+
+# 安装并启动服务
+./service.sh install   # 自动检测 macOS/Linux
+./service.sh start
+./service.sh status
+
+# 其他命令: stop, restart, uninstall
+```
+
+### 手动配置
+
+<details>
+<summary>macOS (launchd)</summary>
+
+```bash
+cat > ~/Library/LaunchAgents/com.whozere.agent.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>Label</key>
-    <string>com.whozere</string>
+    <key>Label</key><string>com.whozere.agent</string>
     <key>ProgramArguments</key>
     <array>
         <string>/usr/local/bin/whozere</string>
         <string>-config</string>
         <string>/usr/local/etc/whozere/config.yaml</string>
     </array>
-    <key>RunAtLoad</key>
-    <true/>
-    <key>KeepAlive</key>
-    <true/>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key><true/>
 </dict>
 </plist>
 EOF
 
-# 加载服务
-launchctl load ~/Library/LaunchAgents/com.whozere.plist
+launchctl load ~/Library/LaunchAgents/com.whozere.agent.plist
 ```
+</details>
 
-### Linux (systemd)
+<details>
+<summary>Linux (systemd)</summary>
 
 ```bash
-# 复制配置到 /etc
-sudo mkdir -p /etc/whozere
-sudo cp /usr/local/etc/whozere/config.yaml /etc/whozere/config.yaml
-
-# 创建 service 文件
 sudo tee /etc/systemd/system/whozere.service << 'EOF'
 [Unit]
 Description=whozere - 登录检测与通知服务
@@ -145,7 +157,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/whozere -config /etc/whozere/config.yaml
+ExecStart=/usr/local/bin/whozere -config /usr/local/etc/whozere/config.yaml
 Restart=always
 RestartSec=5
 
@@ -153,11 +165,9 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 
-# 启用并启动服务
-sudo systemctl daemon-reload
-sudo systemctl enable whozere
-sudo systemctl start whozere
+sudo systemctl enable --now whozere
 ```
+</details>
 
 ### Windows
 
@@ -192,19 +202,13 @@ nssm start whozere
 ## �️ 卸载
 
 ```bash
-# macOS/Linux
+# 一键卸载
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
+
+# 或手动卸载
 sudo rm /usr/local/bin/whozere
 sudo rm -rf /usr/local/etc/whozere
-
-# 删除服务 (macOS)
-launchctl unload ~/Library/LaunchAgents/com.whozere.plist
-rm ~/Library/LaunchAgents/com.whozere.plist
-
-# 删除服务 (Linux)
-sudo systemctl stop whozere
-sudo systemctl disable whozere
-sudo rm /etc/systemd/system/whozere.service
-sudo rm -rf /etc/whozere
+./scripts/service.sh uninstall  # 删除服务
 ```
 
 ## �🛠️ 开发
