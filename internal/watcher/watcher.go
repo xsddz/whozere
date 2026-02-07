@@ -32,3 +32,9 @@ type Watcher interface {
 func New() (Watcher, error) {
 	return newPlatformWatcher()
 }
+
+// PlatformLogFiles returns the log files monitored on the current platform
+// Returns nil for platforms that don't use log files (e.g., macOS, Windows)
+func PlatformLogFiles() []string {
+	return platformLogFiles()
+}

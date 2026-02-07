@@ -23,10 +23,27 @@
 ## ✨ 特性
 
 - 🖥️ **跨平台支持**：macOS、Linux、Windows
-- 📡 **多种通知渠道**：Webhook、钉钉、企业微信、Telegram、Slack、邮件
+- 📡 **多种通知渠道**：Webhook、钉钉、飞书、企业微信、Telegram、Slack、邮件
 - 🔍 **检测多种登录方式**：SSH、控制台、远程桌面、屏幕共享
 - ⚡ **实时监控**：登录即推送
 - 🛡️ **轻量级**：资源占用极低
+
+## 🚀 快速开始
+
+```bash
+# 1. 安装 (macOS/Linux 一键安装)
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/install.sh | bash
+
+# 2. 配置
+sudo cp /usr/local/etc/whozere/config.example.yaml /usr/local/etc/whozere/config.yaml
+sudo vim /usr/local/etc/whozere/config.yaml  # 编辑通知设置
+
+# 3. 测试通知
+whozere -config /usr/local/etc/whozere/config.yaml -test
+
+# 4. 运行
+whozere -config /usr/local/etc/whozere/config.yaml
+```
 
 ## 📋 环境要求
 
@@ -34,29 +51,36 @@
 - macOS 10.15+ / Linux / Windows 10+
 - 网络访问权限 (用于发送通知)
 
-## 🚀 快速开始
+## 📦 安装
 
-### 安装
+### 源码编译
 
 ```bash
-# 方式一：一键安装脚本
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/install.sh | bash
-
-# 方式二：Go 安装
-go install github.com/xsddz/whozere/cmd/whozere@latest
-
-# 方式三：手动下载
-# 从 https://github.com/xsddz/whozere/releases 下载对应平台的二进制文件
+git clone https://github.com/xsddz/whozere.git
+cd whozere
+go build -o whozere ./cmd/whozere
+cp config.example.yaml config.yaml  # 然后编辑 config.yaml
 ```
 
-### 配置
+### 交叉编译
 
 ```bash
-# 复制示例配置
-cp config.example.yaml config.yaml
+# Linux
+GOOS=linux GOARCH=amd64 go build -o whozere-linux-amd64 ./cmd/whozere
 
-# 编辑配置文件，启用并配置你需要的通知渠道
-vim config.yaml
+# Windows
+GOOS=windows GOARCH=amd64 go build -o whozere-windows-amd64.exe ./cmd/whozere
+
+# macOS
+GOOS=darwin GOARCH=arm64 go build -o whozere-darwin-arm64 ./cmd/whozere
+```
+
+## ⚙️ 配置
+
+复制示例配置文件：
+
+```bash
+cp config.example.yaml config.yaml
 ```
 
 ### 配置示例
@@ -85,20 +109,15 @@ notifiers:
 > 📝 查看 [config.example.yaml](config.example.yaml) 了解所有通知渠道：
 > 钉钉、飞书、企业微信、Telegram、Slack 等。
 
-### 运行
+## 📖 使用方法
 
 ```bash
-# 测试通知
-whozere -config /usr/local/etc/whozere/config.yaml -test
-
-# 检查过去 1 小时的登录 + 监听新登录
-whozere -config /usr/local/etc/whozere/config.yaml -since 1h
-
-# 前台运行（仅监听新登录）
-whozere -config /usr/local/etc/whozere/config.yaml
-
-# 查看帮助
-whozere -help
+./whozere                           # 使用默认配置运行
+./whozere -config /path/config.yaml # 指定配置文件
+./whozere -since 1h                 # 检查过去 1 小时的登录 + 监听新登录
+./whozere -test                     # 发送测试通知
+./whozere -version                  # 显示版本
+./whozere -help                     # 显示所有选项
 ```
 
 <details>
@@ -108,6 +127,8 @@ whozere -help
 Usage of whozere:
   -config string
         配置文件路径 (默认 "config.yaml")
+  -integrity
+        启用日志完整性监控 (检测篡改) (默认 true)
   -since duration
         检查指定时间前的登录事件 (如 1h, 30m)
   -test
@@ -249,6 +270,42 @@ nssm start whozere
 - 使用 Windows 事件日志 (安全日志, 事件 ID 4624)
 - 可能需要管理员权限运行
 
+## 🔐 安全与检测原理
+
+### 检测流程
+
+```
+┌──────────┐     ┌──────────────┐     ┌─────────┐     ┌──────────────┐
+│  登录    │ ──▶ │   系统日志   │ ──▶ │ whozere │ ──▶ │   通知渠道   │
+│  事件    │     │ (auth/event) │     │ watcher │     │              │
+└──────────┘     └──────────────┘     └─────────┘     └──────────────┘
+```
+
+### 日志完整性监控 (仅 Linux)
+
+在 Linux 平台，whozere 会监控认证日志文件是否被篡改：
+
+- **截断检测**：日志文件大小显著减少 (50%+) 会触发告警
+- **删除检测**：日志文件被删除会触发告警
+- **替换检测**：文件 inode 变化 (文件被替换) 会触发告警
+- **权限变更**：文件权限被修改会触发告警
+
+这有助于检测攻击者试图清除入侵痕迹的行为。
+
+### 检测能力边界
+
+whozere 依赖系统日志进行检测，以下情况无法检测：
+
+- 内核级 rootkit（在系统调用层面拦截）
+- 攻击者在登录前已禁用日志
+- 绕过标准认证的攻击（如内核漏洞利用）
+
+建议配合以下安全措施使用：
+
+- 集中式日志收集（实时发送日志到远程服务器）
+- 主机入侵检测系统（AIDE、OSSEC）
+- 网络监控与异常检测
+
 ## 🗑️ 卸载
 
 ```bash
@@ -278,7 +335,7 @@ make build
 make build-all
 ```
 
-## 📄 许可证
+## � 许可证
 
 [MIT License](LICENSE)
 

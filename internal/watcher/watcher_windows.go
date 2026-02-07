@@ -153,3 +153,9 @@ func (w *WindowsWatcher) WatchWithOptions(ctx context.Context, events chan<- not
 		}
 	}
 }
+
+// platformLogFiles returns log files for Windows
+// Windows uses Event Log API, not log files, so return nil
+func platformLogFiles() []string {
+	return nil
+}

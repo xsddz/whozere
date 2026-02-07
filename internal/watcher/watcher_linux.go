@@ -201,3 +201,12 @@ func GetRecentLogins() ([]string, error) {
 	}
 	return strings.Split(string(data), "\n"), nil
 }
+
+// platformLogFiles returns log files for Linux
+func platformLogFiles() []string {
+	logFile := "/var/log/auth.log" // Debian/Ubuntu
+	if _, err := os.Stat(logFile); os.IsNotExist(err) {
+		logFile = "/var/log/secure" // RHEL/CentOS
+	}
+	return []string{logFile}
+}

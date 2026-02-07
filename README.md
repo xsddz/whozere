@@ -127,6 +127,8 @@ notifiers:
 Usage of whozere:
   -config string
         Path to configuration file (default "config.yaml")
+  -integrity
+        Enable log integrity monitoring (detect tampering) (default true)
   -since duration
         Check login events from this duration ago (e.g., 1h, 30m)
   -test
@@ -254,6 +256,42 @@ nssm start whozere
 | **macOS** | `log stream` | Monitors loginwindow, sshd, screensharingd |
 | **Linux** | Log files | `/var/log/auth.log` or `/var/log/secure` |
 | **Windows** | Event Log | Security Log, Event ID 4624 |
+
+## 🔐 Security & Detection
+
+### How Detection Works
+
+```
+┌──────────┐     ┌──────────────┐     ┌─────────┐     ┌──────────────┐
+│  Login   │ ──▶ │ System Logs  │ ──▶ │ whozere │ ──▶ │ Notification │
+│  Event   │     │ (auth/event) │     │ watcher │     │   Channel    │
+└──────────┘     └──────────────┘     └─────────┘     └──────────────┘
+```
+
+### Log Integrity Monitoring (Linux)
+
+On Linux, whozere monitors the authentication log file for tampering:
+
+- **Truncation**: Alerts if log file size drops significantly (50%+)
+- **Deletion**: Alerts if log file is removed
+- **Replacement**: Alerts if file inode changes (file replaced)
+- **Permission change**: Alerts if file permissions are modified
+
+This helps detect attempts to erase evidence of unauthorized access.
+
+### Limitations
+
+whozere relies on system logs for detection. It cannot detect:
+
+- Kernel-level rootkits that intercept system calls
+- Attackers with root access who disable logging before login
+- Attacks that bypass standard authentication (e.g., kernel exploits)
+
+For comprehensive security, combine whozere with:
+
+- Centralized log collection (ship logs to remote server immediately)
+- Host-based intrusion detection (AIDE, OSSEC)
+- Network monitoring and anomaly detection
 
 ## 🗑️ Uninstall
 

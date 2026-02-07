@@ -24,6 +24,7 @@ func main() {
 	showVersion := flag.Bool("version", false, "Show version information")
 	testNotify := flag.Bool("test", false, "Send a test notification and exit")
 	since := flag.Duration("since", 0, "Check login events from this duration ago (e.g., 1h, 30m)")
+	integrity := flag.Bool("integrity", true, "Enable log integrity monitoring (detect tampering)")
 	flag.Parse()
 
 	// Show version
@@ -114,6 +115,20 @@ func main() {
 			log.Printf("Watcher error: %v", err)
 		}
 	}()
+
+	// Start log integrity monitor if enabled and applicable
+	if *integrity {
+		logFiles := watcher.PlatformLogFiles()
+		if len(logFiles) > 0 {
+			monitor := watcher.NewLogIntegrityMonitor(logFiles, watcher.DefaultLogIntegrityOptions())
+			go func() {
+				if err := monitor.Start(ctx, events); err != nil && ctx.Err() == nil {
+					log.Printf("Log integrity monitor error: %v", err)
+				}
+			}()
+			log.Printf("Log integrity monitor started for: %v", logFiles)
+		}
+	}
 
 	if *since > 0 {
 		log.Printf("whozere v%s started, checking logins from %v ago and watching for new ones...", version, *since)

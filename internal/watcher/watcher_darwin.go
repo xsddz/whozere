@@ -166,3 +166,9 @@ func GetCurrentUser() string {
 
 	return "unknown"
 }
+
+// platformLogFiles returns log files for macOS
+// macOS uses log stream command, not log files, so return nil
+func platformLogFiles() []string {
+	return nil
+}
