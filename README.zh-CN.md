@@ -63,41 +63,59 @@ vim config.yaml
 
 ```yaml
 notifiers:
-  # 钉钉机器人
-  - type: dingtalk
-    name: "钉钉告警"
+  # 通用 Webhook
+  - type: webhook
+    name: "我的 Webhook"
     enabled: true
     config:
-      webhook: "https://oapi.dingtalk.com/robot/send?access_token=你的TOKEN"
-      secret: "你的加签密钥"  # 可选
+      url: "https://example.com/webhook"
 
-  # 企业微信机器人
-  - type: wecom
-    name: "企微告警"  
+  # 邮件通知
+  - type: email
     enabled: false
     config:
-      webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的KEY"
-
-  # Telegram
-  - type: telegram
-    enabled: false
-    config:
-      token: "你的BOT_TOKEN"
-      chat_id: "你的CHAT_ID"
+      smtp_host: "smtp.example.com"
+      smtp_port: "587"
+      username: "your@email.com"
+      password: "your_password"
+      from: "whozere@example.com"
+      to: "admin@example.com"
 ```
+
+> 📝 查看 [config.example.yaml](config.example.yaml) 了解所有通知渠道：
+> 钉钉、飞书、企业微信、Telegram、Slack 等。
 
 ### 运行
 
 ```bash
-# 测试通知是否正常 (一键安装后)
+# 测试通知
 whozere -config /usr/local/etc/whozere/config.yaml -test
 
-# 前台运行
+# 检查过去 1 小时的登录 + 监听新登录
+whozere -config /usr/local/etc/whozere/config.yaml -since 1h
+
+# 前台运行（仅监听新登录）
 whozere -config /usr/local/etc/whozere/config.yaml
 
-# 查看版本
-whozere -version
+# 查看帮助
+whozere -help
 ```
+
+<details>
+<summary>完整帮助信息</summary>
+
+```
+Usage of whozere:
+  -config string
+        配置文件路径 (默认 "config.yaml")
+  -since duration
+        检查指定时间前的登录事件 (如 1h, 30m)
+  -test
+        发送测试通知后退出
+  -version
+        显示版本信息
+```
+</details>
 
 ## 📬 通知格式
 

@@ -23,6 +23,7 @@ func main() {
 	configPath := flag.String("config", "config.yaml", "Path to configuration file")
 	showVersion := flag.Bool("version", false, "Show version information")
 	testNotify := flag.Bool("test", false, "Send a test notification and exit")
+	since := flag.Duration("since", 0, "Check login events from this duration ago (e.g., 1h, 30m)")
 	flag.Parse()
 
 	// Show version
@@ -106,14 +107,19 @@ func main() {
 	// Create event channel
 	events := make(chan notifier.LoginEvent, 10)
 
-	// Start watcher
+	// Start watcher with options
+	watchOpts := watcher.Options{Since: *since}
 	go func() {
-		if err := w.Watch(ctx, events); err != nil && ctx.Err() == nil {
+		if err := w.WatchWithOptions(ctx, events, watchOpts); err != nil && ctx.Err() == nil {
 			log.Printf("Watcher error: %v", err)
 		}
 	}()
 
-	log.Printf("whozere v%s started, watching for logins...", version)
+	if *since > 0 {
+		log.Printf("whozere v%s started, checking logins from %v ago and watching for new ones...", version, *since)
+	} else {
+		log.Printf("whozere v%s started, watching for logins...", version)
+	}
 
 	// Process events
 	for {

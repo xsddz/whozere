@@ -63,6 +63,8 @@ func New(cfg config.NotifierConfig) (Notifier, error) {
 		return NewSlack(cfg)
 	case "email":
 		return NewEmail(cfg)
+	case "feishu":
+		return NewFeishu(cfg)
 	default:
 		return nil, fmt.Errorf("unknown notifier type: %s", cfg.Type)
 	}

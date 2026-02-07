@@ -19,6 +19,14 @@ notifiers:
       webhook: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"
       secret: ""  # optional, for signed mode
 
+  # Feishu (Lark) Robot
+  - type: feishu
+    name: "Feishu Alert"
+    enabled: false
+    config:
+      webhook: "https://open.feishu.cn/open-apis/bot/v2/hook/YOUR_TOKEN"
+      secret: ""  # optional, for signed mode
+
   # WeCom (企业微信) Robot
   - type: wecom
     name: "WeCom Alert"

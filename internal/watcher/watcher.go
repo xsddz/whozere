@@ -2,9 +2,17 @@ package watcher
 
 import (
 	"context"
+	"time"
 
 	"github.com/xsddz/whozere/internal/notifier"
 )
+
+// Options configures watcher behavior
+type Options struct {
+	// Since specifies how far back to check for login events
+	// Zero means only watch new events (no history)
+	Since time.Duration
+}
 
 // Watcher is the interface for login detection
 type Watcher interface {
@@ -12,6 +20,9 @@ type Watcher interface {
 	// It should send login events to the provided channel
 	// The watcher should stop when the context is cancelled
 	Watch(ctx context.Context, events chan<- notifier.LoginEvent) error
+
+	// WatchWithOptions starts watching with specific options
+	WatchWithOptions(ctx context.Context, events chan<- notifier.LoginEvent, opts Options) error
 
 	// Name returns the name of this watcher
 	Name() string

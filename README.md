@@ -94,33 +94,6 @@ notifiers:
     config:
       url: "https://example.com/webhook"
 
-  # DingTalk Robot
-  - type: dingtalk
-    name: "DingTalk Alert"
-    enabled: false
-    config:
-      webhook: "https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"
-      secret: ""  # optional
-
-  # WeCom (企业微信)
-  - type: wecom
-    enabled: false
-    config:
-      webhook: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY"
-
-  # Telegram
-  - type: telegram
-    enabled: false
-    config:
-      token: "YOUR_BOT_TOKEN"
-      chat_id: "YOUR_CHAT_ID"
-
-  # Slack
-  - type: slack
-    enabled: false
-    config:
-      webhook: "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-
   # Email
   - type: email
     enabled: false
@@ -133,14 +106,35 @@ notifiers:
       to: "admin@example.com"
 ```
 
+> 📝 See [config.example.yaml](config.example.yaml) for all notification channels:
+> DingTalk, Feishu, WeCom, Telegram, Slack, and more.
+
 ## 📖 Usage
 
 ```bash
 ./whozere                           # Run with default config
 ./whozere -config /path/config.yaml # Specify config file
+./whozere -since 1h                 # Check logins from last 1 hour + watch new
 ./whozere -test                     # Send test notification
 ./whozere -version                  # Show version
+./whozere -help                     # Show all options
 ```
+
+<details>
+<summary>Full help output</summary>
+
+```
+Usage of whozere:
+  -config string
+        Path to configuration file (default "config.yaml")
+  -since duration
+        Check login events from this duration ago (e.g., 1h, 30m)
+  -test
+        Send a test notification and exit
+  -version
+        Show version information
+```
+</details>
 
 ## 📬 Notification Format
 
