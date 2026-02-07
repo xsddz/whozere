@@ -1,13 +1,14 @@
 .PHONY: build build-all test clean
 
-VERSION := 0.1.0
+VERSION := $(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
 BINARY := whozere
-LDFLAGS := -s -w
+LDFLAGS := -s -w -X main.version=$(VERSION)
 
 build:
 	go build -ldflags "$(LDFLAGS)" -o $(BINARY) ./cmd/whozere
 
 build-all:
+	@mkdir -p dist
 	GOOS=darwin GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o dist/$(BINARY)-darwin-amd64 ./cmd/whozere
 	GOOS=darwin GOARCH=arm64 go build -ldflags "$(LDFLAGS)" -o dist/$(BINARY)-darwin-arm64 ./cmd/whozere
 	GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -o dist/$(BINARY)-linux-amd64 ./cmd/whozere

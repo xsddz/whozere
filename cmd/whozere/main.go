@@ -16,7 +16,8 @@ import (
 	"github.com/xsddz/whozere/internal/watcher"
 )
 
-const version = "0.1.0"
+// version is set via ldflags at build time
+var version = "dev"
 
 func main() {
 	// Parse command line flags
