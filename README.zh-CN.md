@@ -41,8 +41,9 @@ sudo vim /usr/local/etc/whozere/config.yaml  # 编辑通知设置
 # 3. 测试通知
 whozere -config /usr/local/etc/whozere/config.yaml -test
 
-# 4. 运行
-whozere -config /usr/local/etc/whozere/config.yaml
+# 4. 安装为服务 (开机自启)
+whozere-service install
+whozere-service start
 ```
 
 ## 📋 环境要求
@@ -170,21 +171,19 @@ Terminal: ssh
 
 ## 🔧 作为服务运行
 
-使用 `scripts/service.sh` 快速配置，或手动设置。
+安装脚本会自动安装 `whozere-service` 命令。
 
 ### 快速配置（推荐）
 
 ```bash
-# 下载服务脚本
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/service.sh -o service.sh
-chmod +x service.sh
+whozere-service install   # 自动检测 macOS/Linux
+whozere-service start
+whozere-service status
 
-# 安装并启动服务
-./service.sh install   # 自动检测 macOS/Linux
-./service.sh start
-./service.sh status
-
-# 其他命令: stop, restart, uninstall
+# 其他命令
+whozere-service stop      # 停止服务
+whozere-service restart   # 重启服务
+whozere-service uninstall # 删除服务
 ```
 
 ### 手动配置
@@ -303,13 +302,11 @@ whozere 依赖系统日志进行检测，以下情况无法检测：
 ## 🗑️ 卸载
 
 ```bash
-# 一键卸载
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
+# 快速卸载（通过安装脚本安装的）
+whozere-uninstall
 
-# 或手动卸载
-sudo rm /usr/local/bin/whozere
-sudo rm -rf /usr/local/etc/whozere
-./scripts/service.sh uninstall  # 删除服务
+# 或一键远程卸载
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
 ```
 
 ## 🛠️ 开发

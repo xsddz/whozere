@@ -41,8 +41,9 @@ sudo vim /usr/local/etc/whozere/config.yaml  # Edit your notification settings
 # 3. Test notification
 whozere -config /usr/local/etc/whozere/config.yaml -test
 
-# 4. Run
-whozere -config /usr/local/etc/whozere/config.yaml
+# 4. Install as service (auto-start on boot)
+whozere-service install
+whozere-service start
 ```
 
 ## 📋 Requirements
@@ -170,21 +171,19 @@ Terminal: ssh
 
 ## 🔧 Running as a Service
 
-Use the `scripts/service.sh` helper or configure manually.
+The install script automatically installs `whozere-service` command.
 
 ### Quick Setup (Recommended)
 
 ```bash
-# Download service script
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/service.sh -o service.sh
-chmod +x service.sh
+whozere-service install   # Auto-detects macOS/Linux
+whozere-service start
+whozere-service status
 
-# Install and start service
-./service.sh install   # Auto-detects macOS/Linux
-./service.sh start
-./service.sh status
-
-# Other commands: stop, restart, uninstall
+# Other commands
+whozere-service stop      # Stop service
+whozere-service restart   # Restart service
+whozere-service uninstall # Remove service
 ```
 
 ### Manual Setup
@@ -290,13 +289,11 @@ whozere relies on system logs for detection. It cannot detect:
 ## 🗑️ Uninstall
 
 ```bash
-# One-line uninstall
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
+# Quick uninstall (if installed via install script)
+whozere-uninstall
 
-# Or manually
-sudo rm /usr/local/bin/whozere
-sudo rm -rf /usr/local/etc/whozere
-./scripts/service.sh uninstall  # Remove service
+# Or one-line uninstall
+curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/scripts/uninstall.sh | bash
 ```
 
 ## 🛠️ Development
