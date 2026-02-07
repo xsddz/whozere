@@ -171,10 +171,13 @@ verify() {
 # Main
 main() {
     echo ""
-    echo "  ╦ ╦╦ ╦╔═╗╔═╗╔═╗╦═╗╔═╗"
-    echo "  ║║║╠═╣║ ║╔═╝║╣ ╠╦╝║╣ "
-    echo "  ╚╩╝╩ ╩╚═╝╚═╝╚═╝╩╚═╚═╝"
-    echo "  Who's here? - Login Detection & Notification"
+    echo "     _       ____  ______  __________ ____  ____"
+    echo "    | |     / / / / / __ \\/__  / ____/ __ \\/ __/"
+    echo "    | | /| / / /_/ / / / / / / / __/ / /_/ / _/  "
+    echo "    | |/ |/ / __  / /_/ / / / / /___/ _, _/ /___"
+    echo "    |__/|__/_/ /_/\\____/ /_/ /_____/_/ |_/_____/"
+    echo ""
+    echo "    Who's here? - Login Detection & Notification"
     echo ""
 
     detect_platform
