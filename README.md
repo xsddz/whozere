@@ -45,7 +45,7 @@ whozere -config /usr/local/etc/whozere/config.yaml -test
 whozere -config /usr/local/etc/whozere/config.yaml
 ```
 
-## � Requirements
+## 📋 Requirements
 
 - Go 1.21+ (for building from source)
 - macOS 10.15+ / Linux / Windows 10+
@@ -142,6 +142,36 @@ notifiers:
 ./whozere -version                  # Show version
 ```
 
+## 📬 Notification Format
+
+When a login is detected, you'll receive a notification like this:
+
+**Text Message:**
+```
+🔔 Login Alert
+
+User: alice
+Host: my-server
+Time: 2026-02-07 20:45:30
+OS: linux
+IP: 192.168.1.100
+Terminal: ssh
+```
+
+**Webhook JSON Payload:**
+```json
+{
+  "event": "login",
+  "username": "alice",
+  "hostname": "my-server",
+  "ip": "192.168.1.100",
+  "terminal": "ssh",
+  "timestamp": "2026-02-07T20:45:30+08:00",
+  "os": "linux",
+  "message": "🔔 Login Alert\n\nUser: alice\n..."
+}
+```
+
 ## 🔧 Running as a Service
 
 Use the `scripts/service.sh` helper or configure manually.
@@ -229,7 +259,7 @@ nssm start whozere
 | **Linux** | Log files | `/var/log/auth.log` or `/var/log/secure` |
 | **Windows** | Event Log | Security Log, Event ID 4624 |
 
-## �️ Uninstall
+## 🗑️ Uninstall
 
 ```bash
 # One-line uninstall
@@ -241,7 +271,7 @@ sudo rm -rf /usr/local/etc/whozere
 ./scripts/service.sh uninstall  # Remove service
 ```
 
-## �🛠️ Development
+## 🛠️ Development
 
 ```bash
 go test ./...        # Run tests

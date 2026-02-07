@@ -99,6 +99,36 @@ whozere -config /usr/local/etc/whozere/config.yaml
 whozere -version
 ```
 
+## 📬 通知格式
+
+当检测到登录时，你会收到类似这样的通知：
+
+**文本消息：**
+```
+🔔 Login Alert
+
+User: alice
+Host: my-server
+Time: 2026-02-07 20:45:30
+OS: linux
+IP: 192.168.1.100
+Terminal: ssh
+```
+
+**Webhook JSON 格式：**
+```json
+{
+  "event": "login",
+  "username": "alice",
+  "hostname": "my-server",
+  "ip": "192.168.1.100",
+  "terminal": "ssh",
+  "timestamp": "2026-02-07T20:45:30+08:00",
+  "os": "linux",
+  "message": "🔔 Login Alert\n\nUser: alice\n..."
+}
+```
+
 ## 🔧 作为服务运行
 
 使用 `scripts/service.sh` 快速配置，或手动设置。
@@ -199,7 +229,7 @@ nssm start whozere
 - 使用 Windows 事件日志 (安全日志, 事件 ID 4624)
 - 可能需要管理员权限运行
 
-## �️ 卸载
+## 🗑️ 卸载
 
 ```bash
 # 一键卸载
@@ -211,7 +241,7 @@ sudo rm -rf /usr/local/etc/whozere
 ./scripts/service.sh uninstall  # 删除服务
 ```
 
-## �🛠️ 开发
+## 🛠️ 开发
 
 ```bash
 # 克隆仓库
