@@ -72,21 +72,24 @@ stop_service() {
     pkill -f "whozere" 2>/dev/null || true
 }
 
-# Remove binary
+# Remove binary and helper scripts
 remove_binary() {
     local BINARY="$INSTALL_DIR/whozere"
+    local SERVICE_SCRIPT="$INSTALL_DIR/whozere-service"
+    local UNINSTALL_SCRIPT="$INSTALL_DIR/whozere-uninstall"
     
-    if [ -f "$BINARY" ]; then
-        info "Removing binary..."
-        if [ -w "$INSTALL_DIR" ]; then
-            rm -f "$BINARY"
-        else
-            sudo rm -f "$BINARY"
+    info "Removing whozere files..."
+    
+    for FILE in "$BINARY" "$SERVICE_SCRIPT" "$UNINSTALL_SCRIPT"; do
+        if [ -f "$FILE" ]; then
+            if [ -w "$INSTALL_DIR" ]; then
+                rm -f "$FILE"
+            else
+                sudo rm -f "$FILE"
+            fi
+            success "Removed $FILE"
         fi
-        success "Removed $BINARY"
-    else
-        warn "Binary not found at $BINARY"
-    fi
+    done
 }
 
 # Remove config (with confirmation)

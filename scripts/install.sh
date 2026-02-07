@@ -151,6 +151,31 @@ install_config() {
     fi
 }
 
+# Install helper scripts (service and uninstall)
+install_scripts() {
+    local SERVICE_URL="https://raw.githubusercontent.com/${REPO}/main/scripts/service.sh"
+    local UNINSTALL_URL="https://raw.githubusercontent.com/${REPO}/main/scripts/uninstall.sh"
+    
+    info "Installing helper scripts..."
+    
+    # Download and install service script
+    if [ -w "$INSTALL_DIR" ]; then
+        curl -fsSL "$SERVICE_URL" -o "$INSTALL_DIR/whozere-service" 2>/dev/null && \
+            chmod +x "$INSTALL_DIR/whozere-service" && \
+            success "Service script installed: whozere-service"
+        curl -fsSL "$UNINSTALL_URL" -o "$INSTALL_DIR/whozere-uninstall" 2>/dev/null && \
+            chmod +x "$INSTALL_DIR/whozere-uninstall" && \
+            success "Uninstall script installed: whozere-uninstall"
+    else
+        sudo curl -fsSL "$SERVICE_URL" -o "$INSTALL_DIR/whozere-service" 2>/dev/null && \
+            sudo chmod +x "$INSTALL_DIR/whozere-service" && \
+            success "Service script installed: whozere-service"
+        sudo curl -fsSL "$UNINSTALL_URL" -o "$INSTALL_DIR/whozere-uninstall" 2>/dev/null && \
+            sudo chmod +x "$INSTALL_DIR/whozere-uninstall" && \
+            success "Uninstall script installed: whozere-uninstall"
+    fi
+}
+
 # Verify installation
 verify() {
     if command -v whozere &> /dev/null; then
@@ -159,10 +184,21 @@ verify() {
         whozere -version
         echo ""
         info "Next steps:"
-        echo "  1. Copy and edit config: cp $CONFIG_DIR/config.example.yaml $CONFIG_DIR/config.yaml"
-        echo "  2. Configure your notification channels in config.yaml"
-        echo "  3. Test: whozere -config $CONFIG_DIR/config.yaml -test"
-        echo "  4. Run: whozere -config $CONFIG_DIR/config.yaml"
+        echo "  1. Copy and edit config:"
+        echo "     sudo cp $CONFIG_DIR/config.example.yaml $CONFIG_DIR/config.yaml"
+        echo "     sudo vim $CONFIG_DIR/config.yaml"
+        echo ""
+        echo "  2. Test notification:"
+        echo "     whozere -config $CONFIG_DIR/config.yaml -test"
+        echo ""
+        echo "  3. Install as service:"
+        echo "     whozere-service install"
+        echo "     whozere-service start"
+        echo ""
+        info "Other commands:"
+        echo "     whozere-service status    # Check service status"
+        echo "     whozere-service stop      # Stop service"
+        echo "     whozere-uninstall         # Uninstall whozere"
     else
         error "Installation failed - whozere not found in PATH"
     fi
@@ -184,6 +220,7 @@ main() {
     get_latest_version
     install
     install_config
+    install_scripts
     verify
 }
 
