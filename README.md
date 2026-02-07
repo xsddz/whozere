@@ -20,16 +20,6 @@
 
 ---
 
-## ⚡ Quick Install
-
-```bash
-# One-line install (macOS/Linux)
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
-
-# Or with Go
-go install github.com/xsddz/whozere/cmd/whozere@latest
-```
-
 ## ✨ Features
 
 - 🖥️ **Cross-platform**: macOS, Linux, Windows
@@ -41,19 +31,25 @@ go install github.com/xsddz/whozere/cmd/whozere@latest
 ## 🚀 Quick Start
 
 ```bash
-# 1. Install
+# 1. Install (one-line for macOS/Linux)
 curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
 
 # 2. Configure
-cp /usr/local/etc/whozere/config.example.yaml /usr/local/etc/whozere/config.yaml
-# Edit config.yaml with your notification settings
+sudo cp /usr/local/etc/whozere/config.example.yaml /usr/local/etc/whozere/config.yaml
+sudo vim /usr/local/etc/whozere/config.yaml  # Edit your notification settings
 
 # 3. Test notification
-whozere -test
+whozere -config /usr/local/etc/whozere/config.yaml -test
 
 # 4. Run
-whozere
+whozere -config /usr/local/etc/whozere/config.yaml
 ```
+
+## � Requirements
+
+- Go 1.21+ (for building from source)
+- macOS 10.15+ / Linux / Windows 10+
+- Network access to notification services
 
 ## 📦 Installation
 
@@ -63,6 +59,7 @@ whozere
 git clone https://github.com/xsddz/whozere.git
 cd whozere
 go build -o whozere ./cmd/whozere
+cp config.example.yaml config.yaml  # Then edit config.yaml
 ```
 
 ### Cross-compilation
@@ -174,6 +171,11 @@ launchctl load ~/Library/LaunchAgents/com.whozere.plist
 ### Linux (systemd)
 
 ```bash
+# Copy config to /etc
+sudo mkdir -p /etc/whozere
+sudo cp /usr/local/etc/whozere/config.yaml /etc/whozere/config.yaml
+
+# Create service
 sudo tee /etc/systemd/system/whozere.service << 'EOF'
 [Unit]
 Description=whozere - Login Detection & Notification
@@ -209,7 +211,25 @@ nssm start whozere
 | **Linux** | Log files | `/var/log/auth.log` or `/var/log/secure` |
 | **Windows** | Event Log | Security Log, Event ID 4624 |
 
-## 🛠️ Development
+## �️ Uninstall
+
+```bash
+# macOS/Linux
+sudo rm /usr/local/bin/whozere
+sudo rm -rf /usr/local/etc/whozere
+
+# Remove service (macOS)
+launchctl unload ~/Library/LaunchAgents/com.whozere.plist
+rm ~/Library/LaunchAgents/com.whozere.plist
+
+# Remove service (Linux)
+sudo systemctl stop whozere
+sudo systemctl disable whozere
+sudo rm /etc/systemd/system/whozere.service
+sudo rm -rf /etc/whozere
+```
+
+## �🛠️ Development
 
 ```bash
 go test ./...        # Run tests

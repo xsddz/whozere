@@ -20,29 +20,19 @@
 
 ---
 
-## ⚡ 一键安装
-
-```bash
-# 一键安装 (macOS/Linux)
-curl -fsSL https://raw.githubusercontent.com/xsddz/whozere/main/install.sh | bash
-
-# 或使用 Go 安装
-go install github.com/xsddz/whozere/cmd/whozere@latest
-```
-
 ## ✨ 特性
 
 - 🖥️ **跨平台支持**：macOS、Linux、Windows
-- 📡 **多种通知渠道**：
-  - 通用 Webhook
-  - 钉钉机器人
-  - 企业微信机器人
-  - Telegram Bot
-  - Slack
-  - 邮件 (SMTP)
+- 📡 **多种通知渠道**：Webhook、钉钉、企业微信、Telegram、Slack、邮件
 - 🔍 **检测多种登录方式**：SSH、控制台、远程桌面、屏幕共享
 - ⚡ **实时监控**：登录即推送
 - 🛡️ **轻量级**：资源占用极低
+
+## 📋 环境要求
+
+- Go 1.21+ (仅源码编译需要)
+- macOS 10.15+ / Linux / Windows 10+
+- 网络访问权限 (用于发送通知)
 
 ## 🚀 快速开始
 
@@ -99,14 +89,11 @@ notifiers:
 ### 运行
 
 ```bash
-# 测试通知是否正常
-whozere -test
+# 测试通知是否正常 (一键安装后)
+whozere -config /usr/local/etc/whozere/config.yaml -test
 
 # 前台运行
-whozere
-
-# 指定配置文件
-whozere -config /path/to/config.yaml
+whozere -config /usr/local/etc/whozere/config.yaml
 
 # 查看版本
 whozere -version
@@ -146,8 +133,12 @@ launchctl load ~/Library/LaunchAgents/com.whozere.plist
 ### Linux (systemd)
 
 ```bash
+# 复制配置到 /etc
+sudo mkdir -p /etc/whozere
+sudo cp /usr/local/etc/whozere/config.yaml /etc/whozere/config.yaml
+
 # 创建 service 文件
-sudo cat > /etc/systemd/system/whozere.service << 'EOF'
+sudo tee /etc/systemd/system/whozere.service << 'EOF'
 [Unit]
 Description=whozere - 登录检测与通知服务
 After=network.target
@@ -198,7 +189,25 @@ nssm start whozere
 - 使用 Windows 事件日志 (安全日志, 事件 ID 4624)
 - 可能需要管理员权限运行
 
-## 🛠️ 开发
+## �️ 卸载
+
+```bash
+# macOS/Linux
+sudo rm /usr/local/bin/whozere
+sudo rm -rf /usr/local/etc/whozere
+
+# 删除服务 (macOS)
+launchctl unload ~/Library/LaunchAgents/com.whozere.plist
+rm ~/Library/LaunchAgents/com.whozere.plist
+
+# 删除服务 (Linux)
+sudo systemctl stop whozere
+sudo systemctl disable whozere
+sudo rm /etc/systemd/system/whozere.service
+sudo rm -rf /etc/whozere
+```
+
+## �🛠️ 开发
 
 ```bash
 # 克隆仓库
