@@ -152,30 +152,101 @@ func (w *LinuxWatcher) WatchWithOptions(ctx context.Context, events chan<- notif
 	}
 
 	// Now watch for new events by tailing the log file
-	file, err := os.Open(w.logFile)
-	if err != nil {
-		return fmt.Errorf("linux: failed to open log file %s: %w", w.logFile, err)
-	}
-	defer file.Close()
-
-	// Seek to end of file to only watch new entries
-	if _, err := file.Seek(0, 2); err != nil {
-		return fmt.Errorf("linux: failed to seek to end: %w", err)
-	}
-
-	reader := bufio.NewReader(file)
-
+	// Use a reopenable file watcher to handle log rotation/truncation
 	go func() {
+		var file *os.File
+		var reader *bufio.Reader
+		var currentInode uint64
+		var currentSize int64
+
+		openFile := func() error {
+			if file != nil {
+				file.Close()
+			}
+			var err error
+			file, err = os.Open(w.logFile)
+			if err != nil {
+				return err
+			}
+			// Seek to end of file to only watch new entries
+			pos, err := file.Seek(0, 2)
+			if err != nil {
+				file.Close()
+				return err
+			}
+			currentSize = pos
+
+			// Get current inode
+			if info, err := file.Stat(); err == nil {
+				currentInode = getInode(info)
+			}
+
+			reader = bufio.NewReader(file)
+			return nil
+		}
+
+		// Initial open
+		if err := openFile(); err != nil {
+			return
+		}
+		defer func() {
+			if file != nil {
+				file.Close()
+			}
+		}()
+
+		checkTicker := time.NewTicker(5 * time.Second)
+		defer checkTicker.Stop()
+
 		for {
 			select {
 			case <-ctx.Done():
 				return
+			case <-checkTicker.C:
+				// Check if file was rotated/truncated
+				info, err := os.Stat(w.logFile)
+				if err != nil {
+					// File might be temporarily unavailable, retry later
+					continue
+				}
+
+				newInode := getInode(info)
+				newSize := info.Size()
+
+				needReopen := false
+
+				// File was replaced (inode changed)
+				if newInode != currentInode && newInode != 0 {
+					needReopen = true
+				}
+
+				// File was truncated (size shrunk)
+				if newSize < currentSize {
+					needReopen = true
+				}
+
+				if needReopen {
+					if err := openFile(); err == nil {
+						// After reopen, seek to beginning to read new content
+						file.Seek(0, 0)
+						currentSize = 0
+						if info, err := file.Stat(); err == nil {
+							currentInode = getInode(info)
+						}
+						reader = bufio.NewReader(file)
+					}
+				}
 			default:
 				line, err := reader.ReadString('\n')
 				if err != nil {
 					// No new lines, wait a bit
 					time.Sleep(100 * time.Millisecond)
 					continue
+				}
+
+				// Update current size after reading
+				if pos, err := file.Seek(0, 1); err == nil {
+					currentSize = pos
 				}
 
 				if event := processLine(line); event != nil {
