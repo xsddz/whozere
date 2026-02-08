@@ -105,10 +105,16 @@ notifiers:
       password: "your_password"
       from: "whozere@example.com"
       to: "admin@example.com"
+
+# Event filters - exclude unwanted login events
+filters:
+  ignore_terminals:
+    - cron   # cron job execution
+    - su     # su command
+    - sudo   # sudo command
 ```
 
-> 📝 See [config.example.yaml](config.example.yaml) for all notification channels:
-> DingTalk, Feishu, WeCom, Telegram, Slack, and more.
+> 📝 See [config.example.yaml](config.example.yaml) for all notification channels and filter options.
 
 ## 📖 Usage
 

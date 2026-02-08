@@ -105,10 +105,16 @@ notifiers:
       password: "your_password"
       from: "whozere@example.com"
       to: "admin@example.com"
+
+# 事件过滤器 - 排除不需要的登录事件
+filters:
+  ignore_terminals:
+    - cron   # cron 定时任务
+    - su     # su 命令
+    - sudo   # sudo 命令
 ```
 
-> 📝 查看 [config.example.yaml](config.example.yaml) 了解所有通知渠道：
-> 钉钉、飞书、企业微信、Telegram、Slack 等。
+> 📝 查看 [config.example.yaml](config.example.yaml) 了解所有通知渠道和过滤选项。
 
 ## 📖 使用方法
 

@@ -60,3 +60,21 @@ notifiers:
       password: "your_password"
       from: "whozere@example.com"
       to: "admin@example.com"  # comma-separated for multiple recipients
+
+# Event filters - exclude unwanted login events
+filters:
+  # Ignore these terminal types (common noise)
+  ignore_terminals:
+    - cron   # cron job execution
+    - su     # su command
+    - sudo   # sudo command
+  
+  # Ignore these users (uncomment if needed)
+  # ignore_users:
+  #   - nobody
+  #   - daemon
+  
+  # Ignore specific user+terminal combinations
+  # ignore_combinations:
+  #   - user: root
+  #     terminal: cron

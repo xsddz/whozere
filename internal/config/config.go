@@ -10,6 +10,49 @@ import (
 // Config represents the main configuration
 type Config struct {
 	Notifiers []NotifierConfig `yaml:"notifiers"`
+	Filters   FilterConfig     `yaml:"filters"`
+}
+
+// FilterConfig defines event filtering rules
+type FilterConfig struct {
+	// IgnoreTerminals is a list of terminal types to ignore (e.g., cron, su, sudo)
+	IgnoreTerminals []string `yaml:"ignore_terminals"`
+	// IgnoreUsers is a list of users to ignore
+	IgnoreUsers []string `yaml:"ignore_users"`
+	// IgnoreCombinations is a list of user+terminal combinations to ignore
+	IgnoreCombinations []FilterCombination `yaml:"ignore_combinations"`
+}
+
+// FilterCombination defines a specific user+terminal combination to ignore
+type FilterCombination struct {
+	User     string `yaml:"user"`
+	Terminal string `yaml:"terminal"`
+}
+
+// ShouldIgnore checks if an event should be ignored based on filter rules
+func (f *FilterConfig) ShouldIgnore(username, terminal string) bool {
+	// Check ignore_terminals
+	for _, t := range f.IgnoreTerminals {
+		if t == terminal {
+			return true
+		}
+	}
+
+	// Check ignore_users
+	for _, u := range f.IgnoreUsers {
+		if u == username {
+			return true
+		}
+	}
+
+	// Check ignore_combinations
+	for _, c := range f.IgnoreCombinations {
+		if c.User == username && c.Terminal == terminal {
+			return true
+		}
+	}
+
+	return false
 }
 
 // NotifierConfig represents a notification channel configuration

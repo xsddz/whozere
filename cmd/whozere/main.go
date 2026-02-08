@@ -141,6 +141,12 @@ func main() {
 	for {
 		select {
 		case event := <-events:
+			// Apply filters
+			if cfg.Filters.ShouldIgnore(event.Username, event.Terminal) {
+				log.Printf("Filtered: %s@%s (%s)", event.Username, event.Hostname, event.Terminal)
+				continue
+			}
+
 			log.Printf("Login detected: %s@%s (%s)", event.Username, event.Hostname, event.Terminal)
 			for _, n := range notifiers {
 				go func(n notifier.Notifier) {
